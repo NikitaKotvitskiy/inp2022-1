@@ -1,0 +1,51 @@
+Variables: PTR, PC
+>
+PTR = PTR + 1
+
+<
+PTR = PTR - 1
+
++
+READ_VALUE
+DATA_WDATA = DATA_RDATA + 1
+WRITE_VALUE
+
+-
+READ_VALUE
+DATA_WDATA = DATA_RDATA - 1
+WRITE_VALUE
+
+[
+READ_VALUE
+IF (DATA_RDATA = 0):
+	CNT = 1
+	WHILE (CNT != 0)
+		NEXT_COM
+		IF (DATA_RDATA = [)
+			CNT = CNT + 1
+		IF (DATA_RDATA = ])
+			CNT = CNT = 1
+	NEXT_COM
+
+]
+
+		
+	
+
+function READ_VALUE:
+	DATA_ADDR = PTR
+	DATA_RDWR = 0
+	DATA_EN = 1
+
+function WRITE_VALUE:
+	DATA_ADDR = PTR
+	DATA_RDWR = 1
+	DATA_EN = 1
+
+function NEXT_COM:
+	DATA_ADDR = PC
+	DATA_RDWR = 0
+	DATA_EN = 1
+
+	PC = PC + 1
+	DATA_EN = 0

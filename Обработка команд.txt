@@ -1,0 +1,722 @@
+START:
+	1:
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 1
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 1
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 1
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR = 
+		MX-1 = 
+		MX-2 =
+
+		__state = GET_COM
+GET_COM:
+	1: //Отправлем запрос на получение команды
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 1
+		DATA_RDWR = 0
+		MX-1 = 
+		MX-2 = PC
+	2: //Первая команда уже на DATA_RDATA, прибавляем к PC единицу, далее начинаем обработку команды
+		PC_inc = 1
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR = 
+		MX-1 = 
+		MX-2 =
+
+		__state = SWITCH
+
+SWITCH:
+	1:	//В зависимости от значения на DATA_RDATA выбираем, обработку какой команды следует начать
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR = 
+		MX-1 = 
+		MX-2 =
+
+		if (DATA_RDATA = >)
+			__state = PTR_INC
+		elsif (DATA_RDATA = <)
+			__state = PTR_DEC
+		elsif (DATA_RDATA = +)
+			__state = DATA_INC
+		elsif (DATA_RDATA = -)
+			__state = DATA_DEC
+		elsif (DATA_RDATA = [)
+			__state = WHILE_START
+		elsif (DATA_RDATA = ])
+			__state = WHILE_END
+		elsif (DATA_RDATA = ()
+			__state = DO_WHILE_START
+		elsif (DATA_RDATA = ))
+			__state = DO_WHILE_END
+		elsif (DATA_RDATA = .)
+			__state = PRINT
+		elsif (DATA_RDATA = ,)
+			__state = READ
+		elsif (DATA_RDATA = \0)
+			__state = END
+
+PTR_INC:
+	1:
+		PC_inc = 1
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 1
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR = 
+		MX-1 = 
+		MX-2 =
+
+		__state = GET_COM
+
+PTR_DEC:
+	1:
+		PC_inc = 1
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 1
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR = 
+		MX-1 = 
+		MX-2 =
+
+		__state = GET_COM
+
+DATA_INC:
+	1: //Читаем данные на PTR
+		PC_inc = 1
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 1
+		DATA_RDWR = 0 
+		MX-1 = 
+		MX-2 = PTR
+	2: //Записываем те же данные, увеличенные на единицу, на PTR
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 1
+		DATA_RDWR = 1
+		MX-1 = +1
+		MX-2 = PTR
+
+		__state = GET_COM
+
+DATA_DEC:
+	1:
+		PC_inc = 1
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 1
+		DATA_RDWR = 0 
+		MX-1 = 
+		MX-2 = PTR
+	2:
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 1
+		DATA_RDWR = 1
+		MX-1 = -1
+		MX-2 = PTR
+
+		__state = GET_COM
+
+WHILE_START:
+	1: //Читаем данные на PTR и 
+		PC_inc = 1
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 1
+		DATA_RDWR = 0 
+		MX-1 = 
+		MX-2 = PTR
+	2: //Если данные на PTR = 0, значит начинаем поиск конца цикла, увеличив CNT на 1. Иначе - просто читаем слудующую команду
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR = 
+		MX-1 = 
+		MX-2 =
+
+		if (DATA_RDATA != 0)
+			CNT_inc = 0
+			__state = GET_COM
+		else
+			CNT_inc = 1
+			__state = WHILE_END_SEARCH
+
+WHILE_END_SEARCH:
+	1: //Читаем команду на PC
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 1
+		DATA_RDWR = 0
+		MX-1 = 
+		MX-2 = PC
+	2: //Если это начало цикла (находящегося внутри нашего цикла) увеличиваем значение CNT на 1, если конец цикла - уменьшаем CNT
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 1
+		DATA_RDWR = 0
+		MX-1 = 
+		MX-2 = PC
+		if (DATA_RDATA = [)
+			CNT_inc = 1
+			CNT_dec = 0
+		elsif (DATA_RDATA = ])
+			CNT_inc = 0
+			CNT_dec = 1
+	3: //Увеличиваем PC. Если CNT = 0, значит мы нашли конец цикла и можем исполнять команду на PC. Иначе - продолжаем поиск
+		PC_inc = 1
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR = 
+		MX-1 = 
+		MX-2 =
+
+		if (CNT = 0)
+			__state = GET_COM
+		else
+			__state = WHILE_END_SEARCH
+
+WHILE_END:
+	1:	//Начинаем поиск начала цикла
+		PC_inc = 0
+		PC_dec = 1
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 1
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR = 0 
+		MX-1 = 
+		MX-2 =
+
+		__state = WHILE_START_SEARCH
+WHILE_START_SEARCH:
+	1: //Читаем команду
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 1
+		DATA_RDWR = 0 
+		MX-1 = 
+		MX-2 = PC
+
+	2: //Если это конец внутреннего цикла, увеличиваем CNT. Если начало - уменьшем
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR =  
+		MX-1 = 
+		MX-2 = 
+
+		if (DATA_RDATA = ])
+			CNT_inc = 1
+			CNT_dec = 0
+		elsif (DATA_RDATA = [)
+			CNT_inc = 0
+			CNT_dec = 1
+	3: //Если CNT = 0 - мы нашли начало цикла и должны его обработать, иначе - надо искать дальше
+		PC_inc = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR = 
+		MX-1 = 
+		MX-2 =
+
+		if (CNT = 0)
+			PC_dec = 0
+			__state = WHILE_START
+		else
+			PC_dec = 1
+			__state = WHILE_START_SEARCH
+
+DO_WHILE_START:
+	1: //Просто пропускаем команду
+		PC_inc = 1
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR = 
+		MX-1 = 
+		MX-2 =
+
+		__state = GET_COM
+
+DO_WHILE_END:
+	1: //Читаем данные с PTR
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 1
+		DATA_RDWR = 0
+		MX-1 = 
+		MX-2 = PTR
+
+	2: //Если данные равны нулю, просто переходим к следующей команде. Иначе - начинаем искать начало цикла
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR = 
+		MX-1 = 
+		MX-2 =
+
+		if (DATA_RDATA = 0)
+			PC_inc = 1
+			PC_dec = 0
+			CNT_inc = 0
+
+			__state = GET_COM
+		else 
+			PC_inc = 0
+			PC_dec = 1
+			CNT_inc = 1
+
+			__state = DO_WHILE_START_SEARCH
+
+DO_WHILE_START_SEARCH:
+	1: //Читаем команду
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 1
+		DATA_RDWR = 0
+		MX-1 = 
+		MX-2 = PC
+
+	2: //Если конец цикла - прибавляем единицу, если начало - убавляем
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR =
+		MX-1 = 
+		MX-2 = 
+
+		if (DATA_RDATA = ))
+			CNT_inc = 1
+			CNT_dec = 0
+		elsif (DATA_RDATA  = ()
+			CNT_inc = 0
+			CNT_dec = 1
+	3: //Если CNT равно 0, значит мы нашли начало, PC указывает на начало и нужно обработать следующую после начала команду. Иначе - продолжаем поиск
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR = 
+		MX-1 = 
+		MX-2 =
+
+		if (CNT = 0)
+			PC_inc = 1
+			PC_dec = 0
+
+			__state = GET_COM
+		else
+			PC_inc = 0
+			PC_dec = 1
+
+			__state = DO_WHILE_START_SEARCH
+
+PRINT:
+	1: //Читаем данные с PTR и ждем, когда освободится OUT
+		PC_inc = 1
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 1
+		DATA_RDWR = 0
+		MX-1 = 
+		MX-2 = PTR
+
+		__state = WAIT_FOR_OUT
+
+WAIT_FOR_OUT:
+	1: //Если OUT не занят, передаем ему данные и сообщаем ему, что данные переданы
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		IN_REQ = 0
+		DATA_EN = 1
+		DATA_RDWR = 0
+		MX-1 = 
+		MX-2 = PTR
+
+		if (OUT_BUSY = 1)
+			OUT_WE = 0
+			__state = WAIT_FOR_OUT
+		else
+			OUT_WE = 1
+			OUT_DATA = DATA_RDATA
+			__state = GET_COM
+
+READ:
+	1: //Запрашиваем данные и ждем их
+		PC_inc = 1
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 1
+		DATA_EN = 0
+		DATA_RDWR =
+		MX-1 = 
+		MX-2 =
+
+		__state = WAIT_FOR_IN
+
+WAIT_FOR_IN:
+	1:
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+
+		if (IN_VLD = 1)
+			IN_REQ = 0
+			DATA_EN = 1
+			DATA_RDWR = 1 
+			MX-1 = IN_DATA
+			MX-2 = PTR
+
+			__state = GET_COM
+		else
+			IN_REQ = 1
+			DATA_EN = 0
+			DATA_RDWR = 
+			MX-1 =
+			MX-2 =
+
+			__state = WAIT_FOR_IN
+
+END:
+	1: //В кои то веки не делаем ничего
+		PC_inc = 0
+		PC_dec = 0
+		PC_res = 0
+	
+		PTR_inc = 0
+		PTR_dec = 0
+		PTR_res = 0
+
+		CNT_inc = 0
+		CNT_dec = 0
+		CNT_res = 0
+
+		OUT_WE = 0
+		IN_REQ = 0
+		DATA_EN = 0
+		DATA_RDWR =
+		MX-1 = 
+		MX-2 =
+
+		__state = END
